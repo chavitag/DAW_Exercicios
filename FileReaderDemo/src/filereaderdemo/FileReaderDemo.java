@@ -54,18 +54,18 @@ public class FileReaderDemo {
      */
     public static void main(String[] args) {
         ArrayList <String> buffer;
-        String line;
+        String line=new String();
         FileReader f;
         Scanner scn;
         int nl;
-        
+         
         buffer=new ArrayList <>();
         scn = new Scanner(System.in);
         try {
             System.out.println("Cargando "+args[0]);
             // Código ineficiente para reparar en Contornos
             f = new FileReader(args[0]);
-            while(!isEof) {
+            while (!isEof) {
                 line=readLine(f);
                 if (line!=null) buffer.add(line);
             }
