@@ -1,7 +1,7 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Lee un arquivo liña a liña usando a clase FileReader
+ * Como FileReader proporciona pouca funcionalidade, para facer
+ * o programa se implementa un método auxiliar que lee as liñas
  */
 package filereaderdemo;
 
@@ -36,7 +36,8 @@ public class FileReaderDemo {
     private static String readLine(FileReader f) throws IOException {
         StringBuilder bfs=new StringBuilder(700000);
         int c=0;
-            
+        
+        // Código ineficiente para reparar en Contornos
         while((c!='\n')&&(c!=-1)) {
             c=f.read();
             if ((c!='\n')&&(c!=-1)) {
@@ -62,6 +63,7 @@ public class FileReaderDemo {
         scn = new Scanner(System.in);
         try {
             System.out.println("Cargando "+args[0]);
+            // Código ineficiente para reparar en Contornos
             f = new FileReader(args[0]);
             while(!isEof) {
                 line=readLine(f);
