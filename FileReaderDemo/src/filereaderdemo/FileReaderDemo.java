@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,10 +36,15 @@ public class FileReaderDemo {
      * @return String: unha liña leida, ou null si non teño nada leido.
      */
     private static String readLine(FileReader f) throws IOException {
-        StringBuilder bfs=new StringBuilder();
-        char c=0;
-                
-        while((c!='\n')&&(c!=-1)) bfs.append(f.read());
+        StringBuilder bfs=new StringBuilder(700000);
+        int c=0;
+            
+        while((c!='\n')&&(c!=-1)) {
+            c=f.read();
+            if ((c!='\n')&&(c!=-1)) {
+                bfs.append((char)c);
+            }
+        }
         if (c==-1) isEof=true;
         if (bfs.length() > 0) return bfs.toString();
         return null;
@@ -51,23 +57,35 @@ public class FileReaderDemo {
         ArrayList <String> buffer;
         String line;
         FileReader f;
+        Scanner scn;
+        int nl;
         
         buffer=new ArrayList <>();
+        scn = new Scanner(System.in);
         try {
-            f = new FileReader(args[1]);
+            System.out.println("Cargando "+args[0]);
+            f = new FileReader(args[0]);
             while(!isEof) {
                 line=readLine(f);
                 if (line!=null) buffer.add(line);
             }
             f.close();
-            System.out.println("Ficheiro "+args[1]+" Leído:");
-            System.out.println("O ficheiro ten "+buffer.size()+" liñas.");
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(FileReaderDemo.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Non se atopa o ficheiro "+args[0]);
         } catch (IOException ex) {
-            Logger.getLogger(FileReaderDemo.class.getName()).log(Level.SEVERE, null, ex);           
+            System.out.println("Erro lendo "+args[0]);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            System.out.println("Debes especificar o nome do ficheiro como argumento.");
         }
-  
+        System.out.println("Ficheiro "+args[0]+" Leído:");
+        System.out.println("O ficheiro ten "+buffer.size()+" liñas.");
+        System.out.println("Que Liña queres ver? ");
+        nl=Integer.valueOf(scn.nextLine());
+        try {
+            System.out.println(buffer.get(nl-1));
+        } catch(IndexOutOfBoundsException ex) {
+            System.out.println("Esa liña non existe");
+        }   
     }
     
 }
