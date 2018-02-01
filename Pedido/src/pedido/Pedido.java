@@ -39,7 +39,11 @@ public class Pedido {
     public Pedido(String pedido) {
         String regex="##[ ]*ARTICULOS[ ]*##";
         String[] partes=pedido.split(regex);
-        for(String s: partes) System.out.println(s);
+        String title="Cliente\n";
+        for(String s: partes) {
+            System.out.println(title+s);
+            title="Lineas:\n";
+        }
     }
 
     public Pedido(File pedido) {
@@ -73,7 +77,7 @@ public class Pedido {
 "Cliente: { Muebles Bonitos S.A. }\n" +
 "Código del cliente: { 00293 }\n" +
 "Dirección de factura: { C/ De en frente, 11 }\n" +
-"} Dirección de entrega: { C/ De al lado, 22 }\n" +
+"Dirección de entrega: { C/ De al lado, 22 }\n" +
 "Nombre del contacto: { Elias }\n" +
 "Teléfono del contacto: { 987654321 }\n" +
 "Correo electrónico del contacto: { mail@mail1234.com }\n" +
