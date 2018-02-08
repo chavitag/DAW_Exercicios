@@ -16,6 +16,9 @@ import java.io.InputStreamReader;
 public class MyScanner {
     BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
     
+    public float readFloat() throws IOException,KeyboardDataInputException {
+        
+    }
     
     public String readString() throws IOException {
         return in.readLine();
