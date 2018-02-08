@@ -14,11 +14,10 @@ import java.io.InputStreamReader;
  * @author xavi
  */
 public class MyScanner {
-    BufferedReader in=new BufferedReader(new InputStreamReader(System.in));
     
     
     public String readString() throws IOException {
-        return in.readLine();
+        // Leer con System.in directamente
     }
     
     private boolean verifyEmailString(String str) {
