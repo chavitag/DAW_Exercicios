@@ -21,7 +21,7 @@ public class MyScanner {
     }
     
     public String readString() throws IOException {
-        return out.readLine();
+        return in.readLine();
     }
     
     private boolean verifyEmailString(String str) {
