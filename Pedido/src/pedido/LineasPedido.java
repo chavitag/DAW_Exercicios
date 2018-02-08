@@ -9,6 +9,6 @@ package pedido;
  *
  * @author xavi
  */
-public class LineaPedido {
+public class LineasPedido {
     
 }

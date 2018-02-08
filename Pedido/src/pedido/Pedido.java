@@ -33,7 +33,7 @@ Forma de pago: { Transferencia }
  */
 public class Pedido {
     Cliente cliente;
-    ArrayList <LineaPedido> pedidos=new ArrayList <LineaPedido>();
+    ArrayList <LineasPedido> pedidos=new ArrayList <LineasPedido>();
 
 
     public Pedido(String pedido) {
@@ -53,14 +53,14 @@ public class Pedido {
     	return cliente;
     }
 
-    public ArrayList <LineaPedido> getPedidos() {
+    public ArrayList <LineasPedido> getPedidos() {
 	return pedidos;
     }
 
     @Override
     public String toString() {
 	String str="Cliente: "+cliente+" Pedido: ";
-	for(LineaPedido p: pedidos) {
+	for(LineasPedido p: pedidos) {
             str+=p+"\n";
 	}
 	return str;
