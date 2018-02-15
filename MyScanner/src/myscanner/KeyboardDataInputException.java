@@ -11,7 +11,7 @@ package myscanner;
  */
 class KeyboardDataInputException extends Exception {
     KBError code;
-    private String[] msgs={
+    private final String[] msgs={
         "No es un EMail",
         "No es una Fecha",
         "No es un Número Decimal",
