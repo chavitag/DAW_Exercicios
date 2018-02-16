@@ -9,9 +9,5 @@ package myscanner;
  *
  * @author xavi
  */
-enum KBError {
-    KB_EMAILFORMAT_EXCEPTION,
-    KB_DATEFORMAT_EXCEPTION,
-    KB_FLOATFORMAT_EXCEPTION,
-    KB_INTFORMAT_EXCEPTION
+class DateFormatException extends Exception {
 }
