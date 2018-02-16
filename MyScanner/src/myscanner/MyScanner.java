@@ -8,7 +8,9 @@ package myscanner;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  *
@@ -16,7 +18,7 @@ import java.util.Calendar;
  */
 public class MyScanner {
     private BufferedReader in;
-    private static String dateformat=null;
+    private static DateFormat dateformat=null;
 
     /**
      *  Constructor: Crea o BufferedReader para as lecturas de teclado
@@ -70,7 +72,7 @@ public class MyScanner {
     }
     
     /**
-     * Verifica que o formato de data especificado é un formato correcto
+     * Indica o formato para Verificar que a data especificada é  correcta
      * Tamén o analiza para que sexa máis fácil de aplicar sobre a data.
      * O formato pode ser:
      *  DD/MM/AAAA, D/M/AAAA, AAAA*MM*DD ... etc
@@ -79,31 +81,13 @@ public class MyScanner {
      * Si temos dúas A, indica que debemos completar o ano cun 20 antes..., si 
      * temos 4 A, que é o ano completo.
      * 
-     * @param format - Formato que debe cumplir a data
-     * @return - O propio format
-     * @throws KeyboardDataInputException (O formato indicado non é un formato correcto)
-     */
-    private static String verifyFormat(String format)  throws KeyboardDataInputException {
-       
-    }
-     
-    /**
-     *
      * @param format
      * @throws KeyboardDataInputException
      */
-    public static void setDateFormat(String format) throws KeyboardDataInputException {
-        MyScanner.dateformat=verifyFormat(format);
+    public static void setDateFormat(String format) throws DateFormatException {
+        MyScanner.dateformat=new DateFormat(format);
     }
      
-    private Calendar verifyDateFormat(String str) throws KeyboardDataInputException {
-        int ano,mes,dia;
-        
-        
-        
-        return Calendar.getInstance().set(ano,mes,dia);
-    }
-    
     /**
      *
      * @return
@@ -111,10 +95,18 @@ public class MyScanner {
      * @throws KeyboardDataInputException
      */
     public Calendar readDate() throws IOException,KeyboardDataInputException {
-        return verifyDateFormat(readString());
+        Calendar c;
+        try {
+            if (dateformat==null) throw
+                new KeyboardDataInputException(KBError.KB_DATEFORMAT_EXCEPTION,"Formato de Fecha no Especificado");
+            int[] fecha=dateformat.verify(readString());
+            c=new GregorianCalendar(fecha[0],fecha[1]-1,fecha[2]);
+        } catch (DateFormatException err) {
+            throw new KeyboardDataInputException(KBError.KB_DATEFORMAT_EXCEPTION,dateformat.toString());
+        }
+        return c;
     }
-     
-   
+       
     private boolean verifyEmailString(String str) {
         char[] strLetras=str.toCharArray();
         int c=0;
@@ -163,9 +155,13 @@ public class MyScanner {
         
         try {
             System.out.print("EMAIL: "); scn.readEmail();
+            // Formato "Raro" Mes*Ano dous díxitos*Dia
+            MyScanner.setDateFormat("M*AA*D");
             System.out.print("DATA: "); c=scn.readDate();
-            System.out.println("A data é :"+c);
-        } catch (KeyboardDataInputException e) {
+            SimpleDateFormat formatDate = new SimpleDateFormat("dd-MM-yyyy");
+            String formatted = formatDate.format(c.getTime());
+            System.out.println("A data é :"+formatted);
+        } catch (KeyboardDataInputException | DateFormatException e) {
             System.out.println("Error en la entrada: "+e.getMessage());
         }
         

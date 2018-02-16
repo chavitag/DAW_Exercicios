@@ -5,19 +5,30 @@
  */
 package myscanner;
 
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 /**
  *
  * @author xavi
  */
 public class DateFormat {
     int lAno=0; // Lonxitude do ano: 2 ou 4
-    char[] fmt={'\0','\0','\0'};  // formato {'D','M','A'} ou {'A','M','D'}.. etc. 
-    char separador=0; // caracter separador entre día mes e ano
+    char[] fmt=new char[3];  // formato {'D','M','A'} ou {'A','M','D'}.. etc. 
+    String separador; // caracter separador entre día mes e ano
+    String format;
     
+    /**
+     * Constructor. 
+     * @param format - Formato da data. A analiza e xenera o patron almacenado en fmt, separador e lAno
+     * @throws DateFormatException 
+     */
     DateFormat(String format) throws DateFormatException {
         String[] aux;
         int ndano;      // Díxitos do ano... 2 ou 4
-        char last=0; int cta=0; int ctam=0;
+        char last=0,s=0; 
+        int cta=0; int ctam=0;
 
         // Dividimos o String en letras para analizar
         char[] f=format.toCharArray();
@@ -35,21 +46,23 @@ public class DateFormat {
                     throw new DateFormatException();
                 
                 // ¿Temos unha letra que non é o separador nin A nin M nin D ?
-                if ((separador!=0) && (separador!=c))
+                if ((s!=0) && (s!=c))
                     throw new DateFormatException();
                 
                 // ¿Temos dous separadores seguidos?
                 if (last==0) last=c;
                 else throw new DateFormatException();
                 
-                separador=c;
+                s=c;
             } else {
                 last=0;
             }
         }
         
+        // Escapamos os caracteres especiais Regex
+        separador=procesaSeparador(s);
         // Partimos o patrón usando o separador
-        aux=format.split(((Character)separador).toString());
+        aux=format.split(separador);
         
         // Ten que ter 3 partes
         if (aux.length!=3)
@@ -87,6 +100,68 @@ public class DateFormat {
                     throw new DateFormatException();
             }
         }
+        this.format=format;
     }
     
+    /**
+     * Algúns separadores poden ter un significado especial nas expresións regulares
+     * e é necesario escapalos
+     * @param separador
+     * @return separador escapado
+     */
+    private String procesaSeparador(char separador) {
+        char[] reserved={'\\','^','$','.',',','|','?','*','+','(',')','[',']','{','}'};
+        String s=null;
+        for(char c: reserved) {
+            if (c==separador) {
+                s="\\"+c;
+                break;
+            } 
+        }
+        if (s==null) s=((Character)separador).toString();
+        return s;
+    }
+    
+    /**
+     * Verifica que date representa unha data segun o formato especificado
+     * e devolve os campos ano,mes e día en ese orden si é correcta.
+     * @param fecha - Fecha en formato String a verificar
+     * @return - Array de ints indicando ano mes e día
+     * @throws myscanner.DateFormatException : Data errónea segun o patrón.
+     */
+    public int[] verify(String fecha) throws DateFormatException {
+        int[] date=new int[3];
+        try {
+            String[] f=fecha.split(separador);
+            if (f.length!=3) throw new DateFormatException();
+            for(int idx=0;idx<3;idx++) {
+                switch(fmt[idx]) {
+                    case 'A':
+                        if (lAno!=f[idx].length()) throw new DateFormatException();
+                        date[0]=Integer.parseInt(f[idx]);
+                        if (lAno==2) date[0]=2000+date[0];
+                        break;
+                    case 'D':
+                        date[2]=Integer.parseInt(f[idx]);
+                        break;
+                    case 'M':
+                        date[1]=Integer.parseInt(f[idx]);
+                        if ((date[1]<1)||(date[1]>12)) throw new DateFormatException();
+                        break;
+                }
+            }
+            // Comprobamos que o día é correcto
+            Calendar cal = new GregorianCalendar(date[0],date[1]-1, 1); 
+            if ((date[2]<1) || (date[2] > cal.getActualMaximum(Calendar.DAY_OF_MONTH)))
+                    throw new DateFormatException();
+        } catch (Exception e) {
+            throw new DateFormatException();
+        }
+        return date;
+    }
+    
+    @Override
+    public String toString() {
+        return format;
+    }
 }

@@ -10,7 +10,8 @@ package myscanner;
  * @author xavi
  */
 class KeyboardDataInputException extends Exception {
-    KBError code;
+    private KBError code;
+    private String info;
     private final String[] msgs={
         "No es un EMail",
         "No es una Fecha",
@@ -24,8 +25,16 @@ class KeyboardDataInputException extends Exception {
         this.code=code;
     }
     
+    KeyboardDataInputException(KBError code,String errinfo) {
+        super();
+        this.info=errinfo;
+        this.code=code;
+    }
+    
     @Override
     public String getMessage() {
-        return msgs[code.ordinal()];
+        String msg=msgs[code.ordinal()];
+        if (info!=null) msg=msg+" ("+info+")";
+        return msg;
     }
 }
