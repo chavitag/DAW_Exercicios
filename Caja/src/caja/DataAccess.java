@@ -159,7 +159,7 @@ public class DataAccess {
         } catch(EOFException ex) {
         } finally {
             if (f!=null) f.close();
-        }3
+        }
     }
     
     /**
