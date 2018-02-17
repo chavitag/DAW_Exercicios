@@ -6,32 +6,22 @@ A solución implementada sigue a seguinte filosofía:
 		unha conexión de rede, un RandomAccessFile, Streams, Readers ... etc)
 
 	- Debemos separar a funcionalidade en clases "autónomas" que teñan sentido. Neste caso distinguiermos:
+
 		-Producto
-			Esta clase nos permitirá instanciar productos. Simplemente terá como atributos o código, nome e precio do producto e os
-			"setters" e "getters" corresponentes. Tamén terá sobreescrito o método toString para representar na pantalla de modo axeitado
-			o producto.
+			Esta clase nos permitirá instanciar productos. 
 
 		-Venta
-			Esta clase representa unha liña de venta dun producto. Terá como atributos o Producto vendido e a data da venta, e sobreescribirá
-			toString para representar de modo axeitado unha liña de venta. Unha venta se crea a partir do código do producto únicamente
+			Esta clase representa unha liña de venta dun producto. 
 
 		-Ticket
-
+            Representa un conxunto de ventas feitas por un cliente.
 
 		- Caja
 			E o programa principal, que amosará o menú e permitirá operar. O seu método máis importante é doCaja(), que se encargará
 			de procesar a lista de ventas do día e actualizar os datos da caixa.
 
 		- DataAccess
-			 Permite realizar as distintas operacións necesarias sobre os datos. Os métodos necesarios serán:
-
-				Producto leeProducto(); 	// Lee e devolve un Producto
-				void saveProducto();			// Almacena o Producto
-				Venta leeVenta();				// Lee de devolve unha Venta
-				void saveVenta();				// Almacena a Venta
-				void actualizaCaixa(Producto pr);	// Modifica a caixa actualizando o nº de ventas
-
-			Esta clase so se utilizará dende o método doCaixa e dende as clases ListaProductos e ListaVentas.
+			 Permite realizar as distintas operacións necesarias sobre os datos. 
 
 
 
