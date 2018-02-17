@@ -15,20 +15,8 @@ A solución implementada sigue a seguinte filosofía:
 			Esta clase representa unha liña de venta dun producto. Terá como atributos o Producto vendido e a data da venta, e sobreescribirá
 			toString para representar de modo axeitado unha liña de venta. Unha venta se crea a partir do código do producto únicamente
 
-		-ListaProductos
-			Esta clase permitirá acceder aos distintos productos existentes. A súa implementación pode variar pero nos proporcionará a 
-			seguinte funcionalidade:
+		-Ticket
 
-		    public void addProducto(Producto pr); 	// Engade un novo producto
-		    public void delProducto(int code);			// Elimina un Producto
-		    public Producto getProducto(int code);	// devolve un Producto a partir do seu código
-
-			(Na seguinte avaliación veremos que esto é en realidade a definición dunha Interface)
-
-		-ListaVentas
-			De modo análogo a ListaProductos nos permitirá xestionar as distintas Venta. A funcionalidade necesaria é a seguinte:
-		    public void addVenta(Venta v);	// Engade á venta unha nova venta
-		    public String toString();			// Representa a venta completa en String
 
 		- Caja
 			E o programa principal, que amosará o menú e permitirá operar. O seu método máis importante é doCaja(), que se encargará
@@ -45,15 +33,6 @@ A solución implementada sigue a seguinte filosofía:
 
 			Esta clase so se utilizará dende o método doCaixa e dende as clases ListaProductos e ListaVentas.
 
-		O proceso a seguir será o seguinte:
-			- No inicio do programa, se crea un novo Obxecto ListaProductos.		
-			- Se inicia unha Venta:
-					Creamos un novo obxecto ListaVentas.
-					Mentras non se introduzca -1 no código, se pide o código de producto, creando un obxecto Venta, que engadimos á ListaVentas.
-					Visualizamos o Obxecto ListaVentas-
-			
-			- Se fai caixa:
-					Mentras teñamos ventas, leeremos a Venta e actualizamos a caixa co producto.
 
 
 				

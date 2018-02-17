@@ -1,7 +1,12 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Esta clase proporciona o acceso real aos datos, de xeito que para cambiar o
+ * modo en que se almacenan e recuperan, únicamente é necesario escribir unha nova
+ * versión de esta clase sen tocar o resto do programa.
+ * 
+ * A implementación actual intenta non facer uso das estructuras de almacenamento
+ * que se explican na unidade 8, e utiliza STREAMS polo que o modo de almacenar 
+ * e recuperar datos é moi pouco eficiente. O uso de RandomAccessFile optimizaría
+ * moito o funcionamento. E o uso de estructuras de almacenamento, aínda máis.
  */
 package caja;
 
@@ -24,6 +29,7 @@ import java.util.logging.Logger;
  * @author xavi
  */
 public class DataAccess {
+    // Ficheiros que se utilizarán
     private final String path="/home/xavi/";
     private final String fventas="ventas.dat";
     private final String fproductos="productos.dat";
@@ -32,16 +38,31 @@ public class DataAccess {
     // So queremos un so obxecto DataAccess para a aplicación, esto se coñece
     // como "Patrón Singleton", e se fai facendo privado o constructor da clase
     // e facilitando un método para recuperar ese obxecto único.
-    private static DataAccess da=null;
-    private DataInputStream frVenta=null;
+    private static DataAccess da=null;  
+    private DataInputStream frVenta=null; // Para leer o ficheiro de ventas secuencialmente
     
+    /**
+     * Constructor
+     * 
+     * O Implementamos para facelo privado
+     */
     private DataAccess() {   }
     
+    /**
+     * Permite obter o obxecto DataAccess para acceder aos datos. 
+     * Si non existe, se crea.
+     * @return 
+     */
     public static DataAccess getInstance() {
         if (da==null) da=new DataAccess();
         return da;
     }
         
+    /**
+     * Garda unha venta no ficheiro de ventas.
+     * @param v
+     * @throws IOException 
+     */
     public void saveVenta(Venta v) throws IOException {
         DataOutputStream fVentas=null;
         try {
@@ -52,11 +73,15 @@ public class DataAccess {
         }
     }
 
-    /** Se utiliza para leer ventas secuencialmente ata chegar ao final
+    /** 
+     * Se utiliza para leer ventas secuencialmente ata chegar ao final.
+     * 
+     * Si o ficheiro non está aberto, o abre e lee deixandoo aberto
+     * si xa está aberto, simplemente lee si ten datos devolvendo a venta
+     * leída. Si non quedan datos, pecha o ficheiro e devolve unha venta nula
+     * 
      * @return 
      * @throws java.io.IOException 
-     * @throws java.lang.ClassNotFoundException 
-     * @throws caja.NotExistsException 
      */
     public Venta getVenta() throws IOException {
         Venta v=null;
@@ -70,14 +95,19 @@ public class DataAccess {
         return v;
     }
 
-    
+    /**
+     * Método interno para facer un backup do histórico
+     * @throws IOException 
+     */
     private void makeBackupFile() throws IOException {
         File orixe=new File(path+fhistorico);
         File dest=new File(path+"."+fhistorico);
         Path bkup=Files.move(orixe.toPath(),dest.toPath());
     }
-    
-   
+       
+    /**
+     * Método interno que restaura o backup por si falla algo no procesamento
+     */
     private void restoreBackupFile() {
         File dest=new File(path+fhistorico);
         File orixe=new File(path+"."+fhistorico);
@@ -90,6 +120,10 @@ public class DataAccess {
         }
     }
     
+    /**
+     * Finaliza o procesamento do histórico, movendo e borrando os ficheiros necesarios
+     * @throws IOException 
+     */
     private void endProcess() throws IOException {
         System.out.print("Finalizando proceso....");
         File orixe=new File(path+"n_"+fhistorico);
@@ -97,12 +131,19 @@ public class DataAccess {
         File ventas=new File(path+fventas);
         File bkup=new File(path+"."+fhistorico);
         
-        Files.move(orixe.toPath(),dest.toPath());
-        if (bkup.exists()) bkup.delete();
-        ventas.delete();
+        Files.move(orixe.toPath(),dest.toPath()); // O novo histórico pasa a ser o actual
+        if (bkup.exists()) bkup.delete(); // Borramos o backup si existe
+        ventas.delete();    // Borramos as ventas procesadas
         System.out.println("OK");
     }
     
+    /**
+     * Visualiza o contido do histórico
+     * 
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws NotExistsException 
+     */
     void listaHistorico() throws FileNotFoundException, IOException, NotExistsException {
         DataInputStream ois=null;
         int code,num;
@@ -120,9 +161,13 @@ public class DataAccess {
     }
     
     /**
+     * Actualiza o historico incorporando a venta indicada
+     * 
+     * 
      * Esto é moi pouco eficiente, pero si non queremos usar Collections
      * (ArrayList e demais) é a única solución
-     * @param v 
+     * 
+     * @param v : Venta a incorporar ao histórico
      */
     void updateHistorico(Venta v) throws IOException {
         DataOutputStream oos=null;
@@ -134,25 +179,25 @@ public class DataAccess {
         boolean exists=true;
         
         try {
-            code_p=v.getCode();
-            Hi=new File(path+fhistorico);
-            nHi=new File(path+"n_"+fhistorico);
+            code_p=v.getCode();             // Collemos o código do producto
+            Hi=new File(path+fhistorico);   // Ficheiro histórico vello
+            nHi=new File(path+"n_"+fhistorico); // Novo ficheiro histórico
             try {
-                oos=new DataOutputStream(new FileOutputStream(nHi));
-                ois=new DataInputStream(new FileInputStream(Hi));
+                oos=new DataOutputStream(new FileOutputStream(nHi)); // Escribimos no novo
+                ois=new DataInputStream(new FileInputStream(Hi));    // Leemos no vello
                 while(ois.available()>0) {
-                    code=ois.readInt();
+                    code=ois.readInt(); // Leemos entrada
                     num=ois.readInt();
                     System.out.print("Procesando código "+code+" ("+num+")...");
-                    if (code==code_p) {
+                    if (code==code_p) { // Si coincide incrementamos o número
                         num++;
-                        code_p=-1;
+                        code_p=-1; // Indicamos que a venta está procesada
                     }
-                    oos.writeInt(code);
+                    oos.writeInt(code); // Escribimos entrada
                     oos.writeInt(num);
                     System.out.println("total "+num+". OK");
                 }
-                // Non estaba no histórico
+                // Non estaba no histórico, necesitamos procesar a venta
                 if (code_p>=0) {
                     System.out.print("Procesando código "+code_p+" (1)...");
                     oos.writeInt(code_p);
@@ -161,16 +206,17 @@ public class DataAccess {
                 }
                 oos.close(); oos=null;
                 ois.close(); ois=null;
-                try {
+                try { // Finalizamos
                     System.out.print("Facendo Backup....");
-                    makeBackupFile();
+                    makeBackupFile(); 
                     System.out.println("OK");
                     endProcess();
                 } catch (IOException ex) {
-                    restoreBackupFile();
+                    restoreBackupFile(); // Fallo no proceso, restauramos Backup
                     System.out.println("Produciuse un erro, non se procesou o arquivo.");
                 }
             } catch(FileNotFoundException ex) {
+                // Non existe o histórico, incorporamos a venta ao novo histórico.
                 System.out.print("Gardando Venta...");
                 oos.writeInt(code_p);
                 oos.writeInt(1);
@@ -184,6 +230,15 @@ public class DataAccess {
         }
     }
     
+    /**
+     * Recupera do ficheiro os datos do producto indicado por code
+     * e devolve o Producto correspondente.
+     * 
+     * @param code
+     * @return obxecto Producto obtido
+     * @throws IOException
+     * @throws NotExistsException 
+     */
     Producto getProducto(int code) throws IOException, NotExistsException {
         DataInputStream frProductos=null;
         Producto pr=null;
@@ -200,6 +255,12 @@ public class DataAccess {
         }
     }
 
+    /**
+     * Garda o Producto indicado no ficheiro de productos
+     * 
+     * @param pr
+     * @throws IOException 
+     */
     void saveProducto(Producto pr) throws IOException {
         DataOutputStream fProductos=null;
         try {
@@ -210,6 +271,15 @@ public class DataAccess {
         }   
     }
     
+    /**
+     * Lee un producto do ficheiro de productos. 
+     * 
+     * É unha función auxiliar
+     * 
+     * @param dis
+     * @return
+     * @throws IOException 
+     */
     private Producto readProducto(DataInputStream dis) throws IOException {
         int codigo;
         String name;
@@ -221,12 +291,30 @@ public class DataAccess {
         return new Producto(codigo,name,pvp);
     }
     
+    /**
+     * Garda un Producto no ficheiro de Productos.
+     * 
+     * É unha funcion auxiliar.
+     * 
+     * @param dos
+     * @param pr
+     * @throws IOException 
+     */
     private void writeProducto(DataOutputStream dos, Producto pr) throws IOException {
         dos.writeInt(pr.getCode());
         dos.writeUTF(pr.getName());
         dos.writeFloat(pr.getPVP());
     }
     
+    /**
+     * Lee unha venta do ficheiro de ventas.
+     * 
+     * É unha función auxiliar
+     * 
+     * @param dis
+     * @return
+     * @throws IOException 
+     */
     private Venta readVenta(DataInputStream dis) throws IOException {
         int dia,mes,ano;
         int code;
@@ -238,6 +326,15 @@ public class DataAccess {
         return new Venta(dia,mes,ano,code);
     }
     
+    /**
+     * Escribe unha venta no ficheiro de ventas.
+     * 
+     * É unha función auxiliar
+     * 
+     * @param dos
+     * @param v
+     * @throws IOException 
+     */
     private void writeVenta(DataOutputStream dos, Venta v) throws IOException {
         Calendar c=v.getDate();
         int code=v.getCode();
@@ -253,7 +350,14 @@ public class DataAccess {
     }
     
     
-    
+    /**
+     * Este programa serve para crear o ficheiro de productos.
+     * 
+     * Dende Netbeans debedes indicar que execute este ficheiro
+     * 
+     * @param args
+     * @throws IOException 
+     */
     public static void main(String[] args) throws IOException {
         Scanner scn=new Scanner(System.in);
         int code;
