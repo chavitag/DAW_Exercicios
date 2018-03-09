@@ -3,6 +3,7 @@
  */
 package caja;
 
+import java.io.IOException;
 import java.io.Serializable;
 
 /**
@@ -15,7 +16,7 @@ public class Producto implements Serializable {
     private float pvp;      // PVP do producto
     
     /**
-     * Constructor
+     * Constructor (Para dar de alta novos productos)
      * 
      * @param code
      * @param name
@@ -25,6 +26,19 @@ public class Producto implements Serializable {
         this.code=code;
         this.name=name;
         this.pvp=pvp;
+    }
+
+    /**
+     * Recupera un producto xa existente)
+     * @param code 
+     * @return  
+     * @throws java.io.IOException 
+     * @throws caja.NotExistsException 
+     * @throws java.lang.ClassNotFoundException 
+     */
+    public static Producto getInstance(int code) throws IOException, NotExistsException, ClassNotFoundException {
+        DataAccess da=DataAccess.getInstance();
+        return da.getProducto(code);
     }
        
     /**

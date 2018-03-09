@@ -4,21 +4,36 @@
 package caja;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  *
  * @author xavi
  */
 class Ticket  {
-    float total=0;      // Total acumulado no ticket
-    String ticket="";   // Representación do ticket ata o momento
-    private DataAccess data=DataAccess.getInstance();   // Acceso aos datos para gardar as ventas
+    private Calendar f;         // Data da venta
+    private float total=0;      // Total acumulado no ticket
+    private ArrayList <Producto> lista;
+    
+    public Ticket() {
+        lista=new ArrayList <> ();
+        f=GregorianCalendar.getInstance();
+    }
 
-    public void addVenta(Venta v) throws IOException, NotExistsException {
-        // Ao coller o importe se forza a carga do producto e a verificación da súa existencia1
-        total+=v.getImporte();  // Sumamos o precio do producto ao total
-        data.saveVenta(v);      // Gardamos a venta
-        ticket+=v+"\n";         // Modificamos a representación do ticket
+    public ArrayList <Producto> getProductos() {
+        return lista;
+    }
+    
+    public void addProducto(Producto p) throws IOException, NotExistsException {
+        lista.add(p);
+        total+=p.getPVP();
+    }
+    
+    public Calendar getCalendar() {
+        return f;
     }
 
     /**
@@ -28,19 +43,25 @@ class Ticket  {
     public float getImporte() {
         return total;
     }
-   
+    
+    public void save() throws IOException, ClassNotFoundException {
+        DataAccess data=DataAccess.getInstance();
+        data.saveTicket(this);
+    }
     /**
      * Representación do Ticket
      * @return 
      */
+    @Override
     public String toString() {
-        return ticket;
-    }
-
-    /**
-     * Finaliza o Ticket
-     */
-    void end() {
-        ticket+="\n\nTOTAL: "+total+"\n";
+        StringBuilder str=new StringBuilder("\n\nTicket de Caixa: ");
+        SimpleDateFormat formatDate = new SimpleDateFormat("dd-MM-yyyy");
+        String strDate = formatDate.format(f.getTime());
+        str.append(strDate).append("\n=============================\n");
+        for(Producto p: lista) {
+            str.append(p).append("\n");
+        }
+        str.append("\n").append("TOTAL: ").append(total).append("\n\n");
+        return str.toString();
     }
 }
