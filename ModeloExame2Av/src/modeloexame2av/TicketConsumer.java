@@ -5,12 +5,9 @@
  */
 package modeloexame2av;
 
-import java.io.DataOutputStream;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -18,13 +15,12 @@ import java.util.ArrayList;
  * @author xavi
  */
 public class TicketConsumer {
-    /** Constructor
-    */
-    public TicketConsumer();
 
     /** Procesa o Ticket engadindo o ticket a HistoricoVentas.dat e actualizando 
      * Ventas.dat
      * EXERCICIO b) 2.
+     * @param t
+     * @throws java.io.IOException
     */
     public void procesaTicket(Ticket t) throws IOException {
         rexistraExistencias(t);
@@ -36,15 +32,19 @@ public class TicketConsumer {
      * actualizaHistorico
     */
     private void rexistraExistencias(Ticket t) throws FileNotFoundException, IOException {
-        MyObjectOutputStream dos=null;
+        // Try with resources
+        //
+        try (ObjectOutputStream dos = MyObjectOutputStream.getInstance("/home/xavi/HistoricoVentas.dat")) {
+            dos.writeObject(t);
+        }
+        /*ObjectOutputStream dos=null;
         
         try {
-            dos=MyObjectOutputStream.getInstance("HistoricoVentas.dat");
+            dos=MyObjectOutputStream.getInstance("/home/xavi/HistoricoVentas.dat");
             dos.writeObject(t);
         } finally {
             if (dos!=null) dos.close();
-        }
-        
+        }*/
     }
 
     /** Método privado que actualiza Ventas.dat a partir dos datos do Ticket

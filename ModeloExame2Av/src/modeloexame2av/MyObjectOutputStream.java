@@ -17,7 +17,7 @@ import java.io.ObjectOutputStream;
 class MyObjectOutputStream extends ObjectOutputStream {
     private static ObjectOutputStream oos=null;
     
-    ObjectOutputStream getInstance(String filename) throws IOException {
+    public static ObjectOutputStream getInstance(String filename) throws IOException {
         File f=new File(filename);
         if (f.exists()) 
                 oos=new MyObjectOutputStream(new FileOutputStream(filename,true));
@@ -30,6 +30,7 @@ class MyObjectOutputStream extends ObjectOutputStream {
        super(fos);
     }
    
+    @Override
     protected void writeStreamHeader() throws IOException {
     }
     
